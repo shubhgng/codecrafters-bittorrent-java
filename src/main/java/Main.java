@@ -5,20 +5,17 @@ public class Main {
   private static final Gson gson = new Gson();
 
   public static void main(String[] args) throws Exception {
-    // You can use print statements as follows for debugging, they'll be visible when running tests.
-//    System.out.println("Logs from your program will appear here!");
     String command = args[0];
     if("decode".equals(command)) {
-      //  Uncomment this block to pass the first stage
-        String bencodedValue = args[1];
-        String decoded;
-        try {
-          decoded = decodeBencode(bencodedValue);
-        } catch(RuntimeException e) {
-          System.out.println(e.getMessage());
-          return;
-        }
-        System.out.println(gson.toJson(decoded));
+      String bencodedValue = args[1];
+      String decoded;
+      try {
+        decoded = decodeBencode(bencodedValue);
+      } catch(RuntimeException e) {
+        System.out.println(e.getMessage());
+        return;
+      }
+      System.out.println(gson.toJson(decoded));
 
     } else {
       System.out.println("Unknown command: " + command);
@@ -37,9 +34,17 @@ public class Main {
       }
       int length = Integer.parseInt(bencodedString.substring(0, firstColonIndex));
       return bencodedString.substring(firstColonIndex+1, firstColonIndex+1+length);
+    } else if (bencodedString.startsWith("i") && bencodedString.endsWith("e")) {
+      String intStr = bencodedString.substring(1, bencodedString.length() - 1);
+      try {
+        Integer.parseInt(intStr);
+        return intStr;
+      } catch (NumberFormatException e) {
+        throw new RuntimeException("Invalid integer format");
+      }
     } else {
-      throw new RuntimeException("Only strings are supported at the moment");
+      throw new RuntimeException("Unsupported bencode type");
     }
   }
-  
 }
+
