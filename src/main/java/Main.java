@@ -34,7 +34,12 @@ public class Main {
     } else if (bencodedString.startsWith("i") && bencodedString.endsWith("e")) {
       String intStr = bencodedString.substring(1, bencodedString.length() - 1);
       try {
-        return Integer.parseInt(intStr);
+        long value = Long.parseLong(intStr);
+        if (value <= Integer.MAX_VALUE && value >= Integer.MIN_VALUE) {
+          return (int)value; // Cast to int if within int range
+        } else {
+          return value; // Remain as long otherwise
+        }
       } catch (NumberFormatException e) {
         throw new RuntimeException("Invalid integer format");
       }
